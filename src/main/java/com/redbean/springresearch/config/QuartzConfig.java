@@ -21,18 +21,24 @@ public class QuartzConfig {
 
     private Properties quartzProperties() {
         Properties prop = new Properties();
-        prop.put("quartz.scheduler.instanceName", "ServerScheduler");
+
+        //Configure Main Scheduler Properties
+        prop.put("org.quartz.scheduler.instanceName", "quartzScheduler");
         prop.put("org.quartz.scheduler.instanceId", "AUTO");
-        prop.put("org.quartz.scheduler.skipUpdateCheck", "true");
-        prop.put("org.quartz.scheduler.instanceId", "NON_CLUSTERED");
-        prop.put("org.quartz.scheduler.jobFactory.class", "org.quartz.simpl.SimpleJobFactory");
+
+        //Configure JobStore
+        prop.put("org.quartz.jobStore.clusterCheckinInterval", "5000");
         prop.put("org.quartz.jobStore.class", "org.quartz.impl.jdbcjobstore.JobStoreTX");
         prop.put("org.quartz.jobStore.driverDelegateClass", "org.quartz.impl.jdbcjobstore.StdJDBCDelegate");
-        prop.put("org.quartz.jobStore.dataSource", "quartzDataSource");
+        prop.put("org.quartz.jobStore.dataSource", "myDS");
         prop.put("org.quartz.jobStore.tablePrefix", "qrtz_");
         prop.put("org.quartz.jobStore.isClustered", "true");
+
+        //Configure ThreadPool
         prop.put("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
         prop.put("org.quartz.threadPool.threadCount", "5");
+        prop.put("org.quartz.threadPool.threadPriority", "5");
+        prop.put("org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread", "true");
         return prop;
     }
 

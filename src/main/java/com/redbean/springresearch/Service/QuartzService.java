@@ -18,7 +18,7 @@ public class QuartzService {
     public void test() {
         System.out.println("=============start===============");
 
-        String cronExpress = "0 */1 * * * ?";
+        String cronExpress = "0/5 * * * * ?";
         String instanceName = "autoEnterMatch";
         String jobKeyName = instanceName + "_JOBDETAIL";
         String triggerKeyName = instanceName + "_TRIGGER";
