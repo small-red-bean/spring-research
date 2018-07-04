@@ -3,40 +3,37 @@ package com.redbean.springresearch.util;
 
 import com.alibaba.fastjson.JSON;
 import com.redbean.springresearch.encrypt.RSACoder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public final class CommunicationUtil {
-    private static final Logger LOGGER = LogManager.getLogger(CommunicationUtil.class);
-
-    public static <T> T readJson(HttpServletRequest request, Class<T> clazz) throws Exception {
-        StringBuilder builder = new StringBuilder();
-        InputStream inStream = request.getInputStream();
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        while ((len = inStream.read(buffer)) != -1) {
-            builder.append(new String(buffer, 0, len));
+    public static <T> T readJson(HttpServletRequest request, Class<T> clazz) throws Exception{
+        int len = request.getContentLength();
+        byte[] data = new byte[len];
+        InputStream in = null;
+        try
+        {
+            in = request.getInputStream();
+            in.read(data, 0, len);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(in != null) {
+                in.close();
+            }
         }
-        inStream.close();
-
-        inStream.close();
-        String params = builder.toString();
-        LOGGER.info("|" + SessionHolder.getSessionId() + "|密文|REQUEST|" + params);
-        //解密
-        String isEncrypt = request.getParameter("isEncrypt"); // 是否加密(0:不加密)
-        String deCrypt = decrypt(isEncrypt, params);
-        LOGGER.info("|" + SessionHolder.getSessionId() + "|明文|REQUEST|" + deCrypt);
-        return JSON.parseObject(deCrypt,clazz);
+        return JSON.parseObject(new String(RSACoder.decryptByPublicKey(data, Constants.publicKey), "UTF-8"),clazz);
     }
 
-    public static String decrypt(String isEncrypt, String string) throws Exception {
-        if ("0".equals(isEncrypt)) { // 不加密
-            return string;
-        }
-        byte[] b = RSACoder.encryptByPrivateKey(string.getBytes("UTF-8"), Constants.privateKey);
-        return new String(b, "UTF-8");
+    public static void responseClient(HttpServletResponse response, String rd) throws Exception {
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("text/plain;charset=UTF-8");
+        OutputStream outputStream = response.getOutputStream();
+        outputStream.write(RSACoder.encryptByPublicKey(rd.getBytes("UTF-8"), Constants.publicKey));
+        outputStream.close();
     }
 }
