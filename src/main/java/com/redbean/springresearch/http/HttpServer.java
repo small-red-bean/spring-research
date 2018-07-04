@@ -44,6 +44,25 @@ public final class HttpServer {
         }
     }
 
+    private static String dump(HttpEntity entity, boolean encrypt) throws Exception {
+        InputStream in = null;
+        try {
+            int length = (int)entity.getContentLength();
+            in = entity.getContent();
+            byte[] data = new byte[length];
+            in.read(data, 0, length);
+
+            if(encrypt) {
+                //数据解密
+                return new String(RSACoder.decryptByPrivateKey(data, Constants.privateKey), CHARSET);
+            }
+
+            return new String(data, CHARSET);
+        } finally {
+            in.close();
+        }
+    }
+
     /**
      * 针对json参数的传输
      * @param url 请求地址
@@ -90,24 +109,5 @@ public final class HttpServer {
             }
         }
         return result;
-    }
-
-    private static String dump(HttpEntity entity, boolean encrypt) throws Exception {
-        InputStream in = null;
-        try {
-            int length = (int)entity.getContentLength();
-            in = entity.getContent();
-            byte[] data = new byte[length];
-            in.read(data, 0, length);
-
-            if(encrypt) {
-                //数据解密
-                return new String(RSACoder.decryptByPrivateKey(data, Constants.privateKey), CHARSET);
-            }
-
-            return new String(data, CHARSET);
-        } finally {
-            in.close();
-        }
     }
 }
