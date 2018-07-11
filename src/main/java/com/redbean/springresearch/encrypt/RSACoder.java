@@ -118,7 +118,7 @@ public final class RSACoder {
         Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, privateK);
-        return segmentEncryptionOrDecryption(encryptedData, cipher);
+        return segmentEncryptionOrDecryption(encryptedData, cipher, MAX_ENCRYPT_BLOCK);
     }
 
     /**
@@ -136,7 +136,7 @@ public final class RSACoder {
         Key publicK = keyFactory.generatePublic(x509KeySpec);
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, publicK);
-        return segmentEncryptionOrDecryption(encryptedData, cipher);
+        return segmentEncryptionOrDecryption(encryptedData, cipher, MAX_DECRYPT_BLOCK);
     }
 
     /**
@@ -155,7 +155,7 @@ public final class RSACoder {
         // 对数据加密
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.ENCRYPT_MODE, publicK);
-        byte[] encryptedData = segmentEncryptionOrDecryption(data, cipher);
+        byte[] encryptedData = segmentEncryptionOrDecryption(data, cipher, MAX_ENCRYPT_BLOCK);
         return encryptedData;
     }
 
@@ -174,7 +174,7 @@ public final class RSACoder {
         Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.ENCRYPT_MODE, privateK);
-        return segmentEncryptionOrDecryption(data, cipher);
+        return segmentEncryptionOrDecryption(data, cipher, MAX_ENCRYPT_BLOCK);
     }
 
     /**
@@ -184,7 +184,7 @@ public final class RSACoder {
      * @return
      * @throws Exception
      */
-    private static byte[] segmentEncryptionOrDecryption(byte[] data, Cipher cipher) throws Exception {
+    private static byte[] segmentEncryptionOrDecryption(byte[] data, Cipher cipher, int segmentSize) throws Exception {
         byte[] rs;
         ByteArrayOutputStream out = null;
         try {
@@ -195,14 +195,14 @@ public final class RSACoder {
             int i = 0;
             // 对数据分段解密
             while (inputLen - offSet > 0) {
-                if (inputLen - offSet > MAX_DECRYPT_BLOCK) {
-                    cache = cipher.doFinal(data, offSet, MAX_DECRYPT_BLOCK);
+                if (inputLen - offSet > segmentSize) {
+                    cache = cipher.doFinal(data, offSet, segmentSize);
                 } else {
                     cache = cipher.doFinal(data, offSet, inputLen - offSet);
                 }
                 out.write(cache, 0, cache.length);
                 i++;
-                offSet = i * MAX_DECRYPT_BLOCK;
+                offSet = i * segmentSize;
             }
             rs = out.toByteArray();
         } finally {
