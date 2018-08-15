@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Properties>
+    <Property name="LOG_HOME">${catalina.home:-..}/logs</Property>
+    <property name="FILE_NAME">spring-research</property>
+  </Properties>
+
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}|%.-1level|%logger{0}|%thread|%msg%n"/>
+    </Console>
+
+    <RollingRandomAccessFile name="RollingRandomAccessFile" filename="${LOG_HOME}/${FILE_NAME}.log" filePattern="${LOG_HOME}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.zip">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}|%.-1level|%logger{0}|%thread|%msg%n"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+      </Policies>
+    </RollingRandomAccessFile>
+
+    <!--异步配置-->
+    <Async name="Async">
+      <AppenderRef ref="RollingRandomAccessFile"/>
+    </Async>
+  </Appenders>
+  <Loggers>
+      <Root level="INFO">
+        <AppenderRef ref="STDOUT"/>
+        <AppenderRef ref="RollingRandomAccessFile"/>
+      </Root>
+    </Loggers>
+  </Configuration>

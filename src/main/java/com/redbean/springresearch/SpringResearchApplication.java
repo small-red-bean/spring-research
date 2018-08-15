@@ -1,11 +1,12 @@
 package com.redbean.springresearch;
 
-import com.alibaba.fastjson.JSON;
-import com.redbean.springresearch.http.Data;
-import com.redbean.springresearch.http.HttpServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.util.concurrent.*;
 
 
 @SpringBootApplication
@@ -13,23 +14,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SpringResearchApplication {
 
 	public static void main(String[] args) {
-//		ExecutorService executorService = new ThreadPoolExecutor(4, 4,
-//				8000, TimeUnit.MILLISECONDS,
-//				new LinkedBlockingQueue<Runnable>(100));
-//
-//		executorService.execute(new Runnable() {
-//			@Override
-//			public void run() {
-//				System.out.println("========");
-//			}
-//		});
-
-
-		SpringApplication.run(SpringResearchApplication.class, args);
-
-		Data data = new Data();
-		data.setId(1);
-
-		HttpServer.doPost("http://localhost:9999/demo", JSON.toJSONString(data), true);
-	}
+        SpringApplication.run(SpringResearchApplication.class, args);
+//        int[][] s = new int[3][];
+//            s[0] = new int[]{1,2,3};
+//            s[1] = new int[]{1,2,3,4};
+//            s[2] = new int[]{1,2,3,4,8,9,10};
+//            System.out.println(s[1][3]);
+    }
 }
