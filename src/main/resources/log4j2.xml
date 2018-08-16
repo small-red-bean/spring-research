@@ -10,7 +10,7 @@
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}|%.-1level|%logger{0}|%thread|%msg%n"/>
     </Console>
 
-    <RollingRandomAccessFile name="RollingRandomAccessFile" filename="${LOG_HOME}/${FILE_NAME}.log" filePattern="${LOG_HOME}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.zip">
+    <RollingRandomAccessFile name="RollingRandomAccessFile" filename="${LOG_HOME}/${FILE_NAME}.log" filePattern="${LOG_HOME}/${FILE_NAME}-%d{yyyy-MM-dd}.log.zip">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}|%.-1level|%logger{0}|%thread|%msg%n"/>
       <Policies>
         <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
